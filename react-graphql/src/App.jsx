@@ -6,6 +6,7 @@ import "./App.css";
 import { ALL_PERSONS } from "./persons/graphql-queries";
 import { usePersons } from "./persons/custom-hooks";
 import { PersonForm } from "./PersonForm";
+import { PhoneForm } from "./PhoneForm";
 
 /* se usa pollInterval en la useQuery para decirle a la UI que haga peticiones cada cierto tiempo para ver si hay nuevos datos y que los devuelva. Esto lo malo es que hace peticiones cada x segundos, que puede ser interesante en aplicaciones como AirBnB para que se actualice la disponibilidad de las habitaciones pero hace más fetch de lo necesario
 Otra estrategia sería exportar la query ALL_PERSONS y utilizarla donde estamos mutando en el useMutation como un arreglo de queries dentro de un objeto en la useMutation
@@ -43,6 +44,14 @@ const App = () => {
           </>
         )}
         <PersonForm notifyError={notifyError} />
+        <PhoneForm notifyError={notifyError} />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
       </header>
     </div>
   );
