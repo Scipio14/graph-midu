@@ -3,7 +3,9 @@ import React, { useState } from "react";
 import { CREATE_PERSON } from "./persons/graphql-mutations";
 import { ALL_PERSONS } from "./persons/graphql-queries";
 
-export const PersonForm = () => {
+/* Se puede llevar a cabo un manejo de errores en la useMutation*/
+
+export const PersonForm = ({ notifyError }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [street, setStreet] = useState("");
@@ -11,6 +13,9 @@ export const PersonForm = () => {
 
   const [createPerson] = useMutation(CREATE_PERSON, {
     refetchQueries: [{ query: ALL_PERSONS }],
+    onError: (err) => {
+      notifyError(err.graphQLErrors[0].message);
+    },
   });
 
   const handleSubmit = (e) => {

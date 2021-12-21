@@ -1,4 +1,6 @@
+import React, { useState } from "react";
 import Persons from "./Persons";
+import { Notify } from "./Notify";
 import logo from "./logo.svg";
 import "./App.css";
 import { ALL_PERSONS } from "./persons/graphql-queries";
@@ -19,9 +21,17 @@ const App = () => {
   //console.log(data.allPersons);
 
   const { data, loading, error } = usePersons();
+  const [errorMessage, setErrorMessage] = useState(null);
   if (error) return <span style="color:red">{error}</span>;
+
+  const notifyError = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(null), 5000);
+  };
+
   return (
     <div className="App">
+      <Notify errorMessage={errorMessage} />
       <header className="App-header">
         <img src={logo} alt="logo react" className="App-logo" />
         {loading ? (
@@ -29,10 +39,10 @@ const App = () => {
         ) : (
           <>
             <h1>GraphQL + React</h1>
-            <Persons persons={data.allPersons} />
+            <Persons persons={data?.allPersons} />
           </>
         )}
-        <PersonForm />
+        <PersonForm notifyError={notifyError} />
       </header>
     </div>
   );
