@@ -102,6 +102,8 @@ const resolvers = {
     },
     editNumber: async (root, args) => {
       const person = await Person.findOne({ name: args.name });
+      if (!person) return;
+
       person.phone = args.phone;
       return person.save();
     },
