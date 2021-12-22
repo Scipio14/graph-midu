@@ -1,5 +1,5 @@
+import {} from "dotenv/config";
 import { ApolloServer, UserInputError, gql } from "apollo-server";
-//require("dotenv").config();
 import "./db.js";
 import Person from "./models/person.js";
 
@@ -85,7 +85,8 @@ const resolvers = {
     //Las busquedas que hace mongodb son funciones asíncronas
     allPersons: async (root, args) => {
       // falta el filtro de phone
-      return Person.find({});
+      if (!args.phone) return Person.find({});
+      return Person.find({ phone: { $exists: args.phone === "YES" } });
     },
     personCount: () => Person.collection.countDocuments(),
     findPerson: async (root, args) => {
