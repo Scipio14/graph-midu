@@ -1,5 +1,7 @@
 import { ApolloServer, UserInputError, gql } from "apollo-server";
-import { v1 as uuid } from "uuid";
+//require("dotenv").config();
+import "./db.js";
+import Person from "./models/person.js";
 
 const persons = [
   {
@@ -80,40 +82,27 @@ const typeDefs = gql`
 // schema. This resolver retrieves books from the "books" array above.
 const resolvers = {
   Query: {
-    allPersons: (root, args) => {
-      if (!args.phone) return persons;
-
-      const byPhone = (person) =>
-        args.phone === "YES" ? person.phone : !person.phone;
-
-      return persons.filter(byPhone);
+    //Las busquedas que hace mongodb son funciones asíncronas
+    allPersons: async (root, args) => {
+      // falta el filtro de phone
+      return Person.find({});
     },
-    personCount: () => persons.length,
-    findPerson: (root, args) => {
+    personCount: () => Person.collection.countDocuments(),
+    findPerson: async (root, args) => {
       const { name } = args;
-      return persons.find((person) => person.name === name);
+      return Person.findOne({ name });
     },
   },
   Mutation: {
     addPerson: (root, args) => {
+      const person = new Person({ ...args });
+      return person.save();
       //const {name,phone,street,city} = args
-      if (persons.find((p) => p.name === args.name)) {
-        throw new UserInputError("Name must be unique", {
-          invalidArgs: args.name,
-        });
-      }
-      const person = { ...args, id: uuid() };
-      persons.push(person);
-      return person;
     },
-    editNumber: (root, args) => {
-      const personIndex = persons.findIndex((p) => p.name === args.name);
-      if (personIndex === -1) return null;
-
-      const person = persons[personIndex];
-      const updatedPerson = { ...person, phone: args.phone };
-      persons[personIndex] = updatedPerson;
-      return updatedPerson;
+    editNumber: async (root, args) => {
+      const person = await Person.findOne({ name: args.name });
+      person.phone = args.phone;
+      return person.save();
     },
   },
 
