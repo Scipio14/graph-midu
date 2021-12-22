@@ -41,18 +41,15 @@ const persons = [
 // your data.
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
   # This "Book" type defines the queryable fields for every book in our data source.
   enum YesNo {
     YES
     NO
   }
-
   type Address {
     street: String!
     city: String!
   }
-
   type Person {
     name: String!
     phone: String
@@ -60,7 +57,6 @@ const typeDefs = gql`
     address: Address!
     id: ID!
   }
-
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
@@ -69,7 +65,6 @@ const typeDefs = gql`
     allPersons(phone: YesNo): [Person]!
     findPerson(name: String!): Person
   }
-
   type Mutation {
     addPerson(
       name: String!
@@ -144,5 +139,4 @@ server
   .then(({ url }) => {
     console.log(`🚀  Server ready at ${url}`);
   });
-
 /* En un resolver podemo cambiar el nombre de alguno de los campos de nuestro modelo de schema de tal manera que si yo no quiero que se llame el campo name se lo puedo modificar para que aparezca con otro nombre*/
