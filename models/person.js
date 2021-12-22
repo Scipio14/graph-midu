@@ -19,6 +19,8 @@ const schema = new mongoose.Schema({
   city: {
     type: String,
     required: true,
-    minlength: 5,
+    minlength: 3,
   },
 });
+
+export default mongoose.model("Person", schema);
