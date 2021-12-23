@@ -2,6 +2,8 @@ import {} from "dotenv/config";
 import { ApolloServer, UserInputError, gql } from "apollo-server";
 import "./db.js";
 import Person from "./models/person.js";
+import User from "./models/user.js";
+import jwt from "jsonwebtoken";
 
 const persons = [
   {
@@ -59,6 +61,16 @@ const typeDefs = gql`
     address: Address!
     id: ID!
   }
+
+  type User {
+    username: String!
+    friends: [Person]!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
@@ -66,6 +78,7 @@ const typeDefs = gql`
     personCount: Int!
     allPersons(phone: YesNo): [Person]!
     findPerson(name: String!): Person
+    me: User
   }
   type Mutation {
     addPerson(
@@ -75,6 +88,8 @@ const typeDefs = gql`
       city: String!
     ): Person
     editNumber(name: String!, phone: String!): Person
+    createUser(username: String!): User
+    login(username: String!, password: String!): Token
   }
 `;
 
@@ -106,6 +121,29 @@ const resolvers = {
 
       person.phone = args.phone;
       return person.save();
+    },
+    createUser: async (root, args) => {
+      const user = new User({ username: args.username });
+      return user.save().catch((error) => {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        });
+      });
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user || args.password !== "midupassword") {
+        throw new UserInputError("wrong credentials");
+      }
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      };
+
+      return {
+        value: jwt.sign(userForToken, process.env.JWT_SECRET),
+      };
     },
   },
 
